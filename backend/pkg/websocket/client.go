@@ -1,11 +1,12 @@
 package websocket
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/zelfroster/babble/util"
 )
 
 type Client struct {
@@ -19,7 +20,7 @@ type Message struct {
 	Type      int    `json: "type"`
 	TimeStamp int64  `json: "timeStamp"`
 	Body      string `json: "body"`
-	// Username  string `json: "username"`
+	Username  string `json: "username"`
 }
 
 func (c *Client) Read() {
@@ -36,10 +37,18 @@ func (c *Client) Read() {
 			return
 		}
 
-		t := time.Now().UnixNano() / int64(time.Millisecond)
-		fmt.Println(p)
-		message := Message{Type: messageType, Body: string(p), TimeStamp: t}
+		ts := util.GetCurrentTimeStamp()
+
+		message := Message{Type: messageType, TimeStamp: ts}
+
+		err = json.Unmarshal([]byte(p), &message)
+
+		if err != nil {
+			fmt.Println("error: ", err)
+		}
+
 		c.Pool.Broadcast <- message
+
 		fmt.Printf("Message Recieved: %+v\n", message)
 	}
 }

@@ -2,6 +2,8 @@ package websocket
 
 import (
 	"fmt"
+
+	"github.com/zelfroster/babble/util"
 )
 
 type Pool struct {
@@ -28,7 +30,8 @@ func (pool *Pool) Start() {
 			fmt.Println("size of connection pool: ", len(pool.Clients))
 			for client := range pool.Clients {
 				fmt.Println(client)
-				client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined..."})
+				ts := util.GetCurrentTimeStamp()
+				client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined...", TimeStamp: ts})
 			}
 			break
 		case client := <-pool.Unregister:
@@ -36,7 +39,8 @@ func (pool *Pool) Start() {
 			fmt.Println("size of connection pool: ", len(pool.Clients))
 			for client := range pool.Clients {
 				fmt.Println(client)
-				client.Conn.WriteJSON(Message{Type: 2, Body: "A User Left..."})
+				ts := util.GetCurrentTimeStamp()
+				client.Conn.WriteJSON(Message{Type: 2, Body: "A User Left...", TimeStamp: ts})
 			}
 			break
 		case message := <-pool.Broadcast:
