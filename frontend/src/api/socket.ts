@@ -24,7 +24,7 @@ function connect(cb: (msg: ChatMessage) => void) {
 }
 
 function sendMsg(msg: string, username: string) {
-  const data = JSON.stringify({ username: username, message: msg });
+  const data = JSON.stringify({ username: username, body: msg });
   console.log("sending message: ", data);
   socket.send(data);
 }

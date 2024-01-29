@@ -1,21 +1,20 @@
-import { useState } from "react";
-
 const Message = ({ msg }: { msg: string }) => {
-  {
-    /* const [message, setMessage] = useState<string>(msg); */
-  }
-  const messageObj = JSON.parse(msg);
+  const { TimeStamp, Username, Body } = JSON.parse(msg);
   const messageTimestamp = new Intl.DateTimeFormat("en-US", {
     timeStyle: "short",
-  }).format(messageObj?.TimeStamp);
+  }).format(TimeStamp);
 
-  const messageBody = JSON.parse(messageObj?.Body);
+  const isNotifyMessage =
+    Body === "New User Joined..." || Body === "A User Left...";
 
   return (
     <div className="flex justify-between">
       <div className="flex gap-2">
-        <span className="font-bold">{messageBody?.username}</span>
-        <p>{messageBody?.message}</p>
+        {/* @TODO: Show random and persistent colors for a user */}
+        <span className="font-medium text-[#24d1ac]">{Username}</span>
+        <p className={`${isNotifyMessage ? "text-neutral-500" : "text-white"}`}>
+          {Body}
+        </p>
       </div>
       <span className="text-neutral-500">{messageTimestamp}</span>
     </div>
