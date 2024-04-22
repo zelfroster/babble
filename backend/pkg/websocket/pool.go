@@ -3,7 +3,7 @@ package websocket
 import (
 	"fmt"
 
-	"github.com/zelfroster/babble/util"
+	"github.com/zelfroster/babble/utils"
 )
 
 type Pool struct {
@@ -30,7 +30,7 @@ func (pool *Pool) Start() {
 			fmt.Println("size of connection pool: ", len(pool.Clients))
 			for client := range pool.Clients {
 				fmt.Println(client)
-				ts := util.GetCurrentTimeStamp()
+				ts := utils.GetCurrentTimeStamp()
 				client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined...", TimeStamp: ts})
 			}
 			break
@@ -39,7 +39,7 @@ func (pool *Pool) Start() {
 			fmt.Println("size of connection pool: ", len(pool.Clients))
 			for client := range pool.Clients {
 				fmt.Println(client)
-				ts := util.GetCurrentTimeStamp()
+				ts := utils.GetCurrentTimeStamp()
 				client.Conn.WriteJSON(Message{Type: 2, Body: "A User Left...", TimeStamp: ts})
 			}
 			break

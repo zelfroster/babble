@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/zelfroster/babble/util"
+	"github.com/zelfroster/babble/utils"
 )
 
 type Client struct {
@@ -17,10 +17,10 @@ type Client struct {
 }
 
 type Message struct {
-	Type      int    `json: "type"`
-	TimeStamp int64  `json: "timeStamp"`
-	Body      string `json: "body"`
-	Username  string `json: "username"`
+	Type      int    `json:"type"`
+	TimeStamp int64  `json:"timeStamp"`
+	Body      string `json:"body"`
+	Username  string `json:"username"`
 }
 
 func (c *Client) Read() {
@@ -37,7 +37,7 @@ func (c *Client) Read() {
 			return
 		}
 
-		ts := util.GetCurrentTimeStamp()
+		ts := utils.GetCurrentTimeStamp()
 
 		message := Message{Type: messageType, TimeStamp: ts}
 
