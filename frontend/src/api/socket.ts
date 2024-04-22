@@ -1,6 +1,6 @@
 import { ChatMessage } from "src/App";
 
-const socket = new WebSocket("ws://localhost:9000/ws");
+const socket = new WebSocket("ws://localhost:9001/ws");
 
 function connect(cb: (msg: ChatMessage) => void) {
   console.log("connecting...");
