@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -31,17 +33,24 @@ func (user *User) RegisterUser(db *sql.DB) error {
 		return errors.New("email or username already exists in the database")
 	}
 
+	// add salt and hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("error generating hash from password", err)
+		return err
+	}
+
 	queryString = fmt.Sprintf(
 		`INSERT INTO users (username, email, password, firstname, lastname) VALUES 
     ('%s', '%s', '%s', '%s', '%s') RETURNING *`,
 		user.Username,
 		user.Email,
-		user.Password,
+		string(hashedPassword),
 		user.FirstName,
 		user.LastName,
 	)
 
-	err := db.QueryRow(queryString).Scan(
+	err = db.QueryRow(queryString).Scan(
 		&user.Id,
 		&user.Username,
 		&user.Email,
