@@ -2,41 +2,37 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"log"
+	"os"
 
-	"github.com/zelfroster/babble/pkg/websocket"
+	"github.com/joho/godotenv"
 )
 
-func serveWS(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("websocket endpoint reached")
-
-	conn, err := websocket.Upgrade(w, r)
-
-	if err != nil {
-		fmt.Fprintf(w, "%+v\n", err)
-	}
-
-	client := &websocket.Client{
-		Conn: conn,
-		Pool: pool,
-	}
-
-	pool.Register <- client
-	client.Read()
-}
-
-func setupRoutes() {
-	fmt.Println("Setup routes called")
-	pool := websocket.NewPool()
-	go pool.Start()
-
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWS(pool, w, r)
-	})
-}
-
 func main() {
-	fmt.Println("Welcome to Gocha!")
-	setupRoutes()
-	http.ListenAndServe(":9000", nil)
+	fmt.Println("Welcome to Babble!")
+
+	// Load env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("error loading .env", err)
+	}
+
+	DBUSER := os.Getenv("DB_USER")
+	DBPASSWORD := os.Getenv("DB_PASSWORD")
+	DBNAME := os.Getenv("DB_NAME")
+	DBPORT := os.Getenv("DB_PORT")
+
+	app := App{}
+
+	fmt.Println("initialising app")
+	err = app.Initialise(DBUSER, DBPASSWORD, DBNAME, DBPORT)
+	if err != nil {
+		log.Fatal("error while initialising app", err)
+	}
+	fmt.Println("Connnected DB")
+
+	serverAddress := os.Getenv("SERVER_ADDRESS")
+
+	fmt.Println("Serving on http://localhost:9001")
+	app.Run(serverAddress)
 }
