@@ -24,12 +24,11 @@ func main() {
 
 	app := App{}
 
-	fmt.Println("initialising app")
 	err = app.Initialise(DBUSER, DBPASSWORD, DBNAME, DBPORT)
 	if err != nil {
 		log.Fatal("error while initialising app", err)
 	}
-	fmt.Println("Connnected DB")
+	fmt.Println("App Initialised")
 
 	serverAddress := os.Getenv("SERVER_ADDRESS")
 

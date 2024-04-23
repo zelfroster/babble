@@ -13,5 +13,6 @@ require (
 
 require (
 	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	golang.org/x/net v0.17.0 // indirect
 )
