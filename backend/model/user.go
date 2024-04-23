@@ -66,8 +66,21 @@ func (user *User) RegisterUser(db *sql.DB) error {
 	return nil
 }
 
-func (user *User) SignInUser(db *sql.DB) {
-	// @TODO: Add logic to sign in user
+func (user *User) VerifyCredentials(db *sql.DB) (err error) {
+	queryString := fmt.Sprintf(
+		"SELECT EXISTS(SELECT * FROM users WHERE email='%s' AND password='%s')",
+		user.Email,
+		user.Password,
+	)
+
+	var credentialCorrect bool
+	db.QueryRow(queryString).Scan(&credentialCorrect)
+
+	if !credentialCorrect {
+		return errors.New("incorrect credentials")
+	}
+
+	return nil
 }
 
 // Temporary route to get all users
