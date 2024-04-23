@@ -32,7 +32,6 @@ func decodeJWT(jwtTokenString string) {
 	}
 	signature := parts[2]
 
-	// Print decoded parts
 	fmt.Println("Header:", string(header))
 	fmt.Println("Payload:", string(payload))
 	fmt.Println("Signature:", signature)
