@@ -1,48 +1,21 @@
-import { useEffect, useState } from "react";
-
 import Header from "@components/Header/Header";
-import ChatHistory from "@components/ChatHistory/ChatHistory";
-import ChatInput from "@components/ChatInput/ChatInput";
-import { connect } from "./api/socket";
-import { Input } from "@components/ui/input";
-
-export interface ChatMessage {
-  timeStamp: number;
-  data: string;
-}
+import { Route, Routes } from "react-router-dom";
+import SignInForm from "./routes/SignInForm/SignInForm";
+import Home from "./routes/Home/Home";
+import SignUpForm from "./routes/SignUpForm/SignUpForm";
+import Chat from "./routes/Chat/Chat";
 
 function App() {
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-  const [tempUsername, setTempUsername] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-
-  useEffect(() => {
-    connect((msg: ChatMessage) => {
-      setChatHistory((prevChatHistory) => [...prevChatHistory, msg]);
-    });
-  }, [username]);
-
   return (
-    <div className="container py-4 dark min-h-screen">
-      <Header />
-      {username ? (
-        <>
-          <ChatHistory chatHistory={chatHistory} />
-          <ChatInput username={username} />
-        </>
-      ) : (
-        <form
-          onSubmit={() => {
-            setUsername(tempUsername);
-          }}
-        >
-          <Input
-            value={tempUsername}
-            onChange={(e) => setTempUsername(e.target.value)}
-            placeholder="Enter your name..."
-          />
-        </form>
-      )}
+    <div className="container flex flex-col pt-6 pb-8 dark min-h-screen">
+      <Routes>
+        <Route path="/" element={<Header />}>
+          <Route index element={<Home />} />
+          <Route path="/signin" element={<SignInForm />} />
+          <Route path="/signup" element={<SignUpForm />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
     </div>
   );
 }

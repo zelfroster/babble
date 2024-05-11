@@ -1,8 +1,6 @@
-import { ChatMessage } from "src/App";
-
 const socket = new WebSocket("ws://localhost:9001/ws");
 
-function connect(cb: (msg: ChatMessage) => void) {
+function connect(cb: (msg: string) => void) {
   console.log("connecting...");
 
   socket.onopen = () => {
@@ -11,7 +9,7 @@ function connect(cb: (msg: ChatMessage) => void) {
 
   socket.onmessage = (msg) => {
     console.log("Message from server: ", msg);
-    cb(msg);
+    cb(msg.data);
   };
 
   socket.onclose = (event) => {
@@ -24,6 +22,8 @@ function connect(cb: (msg: ChatMessage) => void) {
 }
 
 function sendMsg(msg: string, username: string) {
+  // @TODO: Send timestamp from frontend only so that the time of message is
+  // accurate
   const data = JSON.stringify({ username: username, body: msg });
   console.log("sending message: ", data);
   socket.send(data);
