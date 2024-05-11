@@ -42,6 +42,8 @@ func (app *App) SetupWsRoutes() {
 	pool := websocket.NewPool()
 	go pool.Start()
 
+	// @TODO: Figure out something since we Can't use Auth Middleware as
+	// WebSocket api is so good 🙂
 	app.Router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWS(pool, w, r)
 	})
@@ -74,7 +76,7 @@ func (app *App) SignInHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = user.VerifyCredentials(app.DB)
+	userData, err := user.GetUserDetails(app.DB)
 	if err != nil {
 		utils.SendError(rw, http.StatusBadRequest, err.Error())
 		return
@@ -86,8 +88,13 @@ func (app *App) SignInHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	message := map[string]string{
-		"token": jwtToken,
+	message := map[string]map[string]any{
+		"user": {
+			"token":     jwtToken,
+			"firstName": userData.FirstName,
+			"lastName":  userData.LastName,
+			"username":  userData.Username,
+		},
 	}
 
 	utils.SendResponse(rw, http.StatusOK, message)
@@ -108,12 +115,13 @@ func Auth(
 	endPointHandler func(rw http.ResponseWriter, req *http.Request),
 ) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		if req.Header["Token"] == nil {
+		if _, ok := req.Header["Token"]; !ok {
 			utils.SendError(
 				rw,
 				http.StatusUnauthorized,
 				fmt.Errorf("You are Unauthorized.").Error(),
 			)
+			return
 		}
 
 		tokenValid, err := utils.VerifyJWT(req.Header["Token"][0])
@@ -137,13 +145,13 @@ func Auth(
 }
 
 func (app *App) handleRoutes() {
-	fmt.Println("calling ws setup")
-	app.SetupWsRoutes()
 	app.Router.HandleFunc("/signup", app.SignUpHandler).Methods("POST", "OPTIONS")
 	app.Router.HandleFunc("/signin", app.SignInHandler).Methods("POST", "OPTIONS")
 	app.Router.HandleFunc("/user/bulk", Auth(app.GetAllUsers)).Methods(
 		"GET", "OPTIONS",
 	)
+	fmt.Println("calling ws setup")
+	app.SetupWsRoutes()
 }
 
 func (app *App) Initialise(

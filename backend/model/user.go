@@ -66,21 +66,22 @@ func (user *User) RegisterUser(db *sql.DB) error {
 	return nil
 }
 
-func (user *User) VerifyCredentials(db *sql.DB) (err error) {
+func (user *User) GetUserDetails(db *sql.DB) (userData User, err error) {
 	queryString := fmt.Sprintf(
-		"SELECT EXISTS(SELECT * FROM users WHERE email='%s' AND password='%s')",
+		"SELECT firstname, lastname, username, password FROM users WHERE email='%s'",
 		user.Email,
-		user.Password,
 	)
 
-	var credentialCorrect bool
-	db.QueryRow(queryString).Scan(&credentialCorrect)
+	var password string
+	db.QueryRow(queryString).
+		Scan(&userData.FirstName, &userData.LastName, &userData.Username, &password)
 
-	if !credentialCorrect {
-		return errors.New("incorrect credentials")
+	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(user.Password))
+	if err != nil {
+		return userData, fmt.Errorf("Incorrect Password: %v", err.Error())
 	}
 
-	return nil
+	return userData, nil
 }
 
 // Temporary route to get all users

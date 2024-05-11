@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
+	// "time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -42,7 +42,7 @@ func GenerateJWT() (string, error) {
 	SecretKey := []byte(SECRET_KEY)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":        time.Now().Add(10 * time.Minute).Unix(),
+		// "exp":        time.Now().Add(10 * time.Minute).Unix(),
 		"authorized": true,
 	})
 	tokenString, err := token.SignedString(SecretKey)
